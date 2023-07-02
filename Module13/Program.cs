@@ -1,30 +1,49 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-namespace CountWords
+namespace PhoneBook
 {
     class Program
     {
+        private static Dictionary<string, Contact> PhoneBook = new Dictionary<string, Contact>()
+        {
+            ["Игорь"] = new Contact(79990000000, "igor@example.com"),
+            ["Андрей"] = new Contact(79990000001, "andrew@example.com"),
+        };
+
         static void Main(string[] args)
         {
-            while (true)
+            Console.WriteLine("Текущий список контактов: ");
+            WriteAllContacts();
+
+            PhoneBook.TryAdd("Диана", new Contact(79160000002, "diana@example.com"));
+
+            Console.WriteLine("Обновленный список контактов: ");
+            WriteAllContacts();
+
+            if (PhoneBook.TryGetValue("Диана", out Contact contact))
+                contact.PhoneNumber = 79990000001;
+
+            Console.WriteLine("Список после изменения: ");
+            WriteAllContacts();
+        }
+
+        public static void WriteAllContacts()
+        {
+            foreach (var contact in PhoneBook)
+                Console.WriteLine(contact.Key + ": " + contact.Value.PhoneNumber + " " + contact.Value.Email);
+            Console.WriteLine();
+        }
+
+        public class Contact
+        {
+            public Contact(long phoneNumber, string email)
             {
-                Console.WriteLine("Введите текст:");
-                var sentence = Console.ReadLine();
-                var characters = sentence.ToCharArray();
-                var symbols = new HashSet<char>();
-                foreach (var symbol in characters)
-                    symbols.Add(symbol);
-                Console.WriteLine(symbols.Count);
-
-                var signs = new[] { ',', ' ', '.' };
-                var numbers = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-
-                bool containsNumbers = symbols.Overlaps(numbers);
-                Console.WriteLine($"Коллекция содержит цифры: {containsNumbers}");
-
-                symbols.ExceptWith(signs);
-                Console.WriteLine($"Символов без знаков препинания:: {symbols.Count}");
+                PhoneNumber = phoneNumber;
+                Email = email;
             }
+            public long PhoneNumber { get; set; }
+            public string Email { get; set; }
         }
     }
 }
