@@ -1,49 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PhoneBook
+namespace StackTest
 {
     class Program
     {
-        private static Dictionary<string, Contact> PhoneBook = new Dictionary<string, Contact>()
-        {
-            ["Игорь"] = new Contact(79990000000, "igor@example.com"),
-            ["Андрей"] = new Contact(79990000001, "andrew@example.com"),
-        };
+        public static Stack<string> words = new Stack<string>();
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Текущий список контактов: ");
-            WriteAllContacts();
-
-            PhoneBook.TryAdd("Диана", new Contact(79160000002, "diana@example.com"));
-
-            Console.WriteLine("Обновленный список контактов: ");
-            WriteAllContacts();
-
-            if (PhoneBook.TryGetValue("Диана", out Contact contact))
-                contact.PhoneNumber = 79990000001;
-
-            Console.WriteLine("Список после изменения: ");
-            WriteAllContacts();
-        }
-
-        public static void WriteAllContacts()
-        {
-            foreach (var contact in PhoneBook)
-                Console.WriteLine(contact.Key + ": " + contact.Value.PhoneNumber + " " + contact.Value.Email);
+            Console.WriteLine("Введите слово и нажмите Enter, чтобы добавить его в стек.");
             Console.WriteLine();
-        }
 
-        public class Contact
-        {
-            public Contact(long phoneNumber, string email)
+            while (true)
             {
-                PhoneNumber = phoneNumber;
-                Email = email;
+                var input = Console.ReadLine();
+
+                switch (input)
+                {
+                    case "Pop":
+                        {
+                            words.TryPop(out string popResult);
+                            break;
+                        }
+                    
+                    case "Peek":
+                        {
+                            words.TryPeek(out string peekResult);
+                            break;
+                        }
+                        words.Push(input);
+                        break;
+                }
+
+
+                Console.WriteLine();
+                Console.WriteLine("В стеке:");
+
+                foreach (var word in words)
+                {
+                    Console.WriteLine(" " + word);
+                }
             }
-            public long PhoneNumber { get; set; }
-            public string Email { get; set; }
         }
     }
 }
