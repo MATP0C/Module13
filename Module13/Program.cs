@@ -1,52 +1,39 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Threading;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace StackTest
+namespace Module13
 {
     class Program
     {
-        public static ConcurrentQueue<string> words = new ConcurrentQueue<string>();
-
         static void Main(string[] args)
         {
-            Console.WriteLine("Введите слово и нажмите Enter, чтобы добавить его в очередь.");
-            Console.WriteLine();
+            string path = @"C:\\Users\\bogda\\OneDrive\\Рабочий стол\\C#\\Grob.txt";
+            string text = File.ReadAllText(path);
+            char[] delimiterChars = { ' ', ',', '.', ':', '!', '?', '№', '‰', '(', '±', ')', '‡', '“', '”', '\t' };
+            Dictionary<string, int> wordCount = new Dictionary<string, int>();
+            string[] words = text.Split(delimiterChars);
 
-            StartQueueProcessing();
-
-            while (true)
-            {
-                var input = Console.ReadLine();
-
-                if(input == "peek")
+            foreach (string word in words)
+                if (!wordCount.ContainsKey(word))
                 {
-                    if(words.TryPeek(out var elem))
-                    {
-                        Console.WriteLine(elem);
-                    }
-                    else
-                    {
-                        words.Enqueue(input);
-                    }
+                    wordCount.Add(word, 1);
                 }
+                else
+                {
+                    int count = wordCount[word];
+                    wordCount[word] = count + 1;
+                }
+
+            string[] top10Words = wordCount.OrderByDescending(x => x.Value).Take(10).Select(x => x.Key).ToArray();
+            Console.WriteLine($"Топ-10 самых часто повторяющихся слов:");
+            for(int i = 0; i < top10Words.Length; i++)
+            {
+                Console.WriteLine("{0} : {1}", top10Words[i], wordCount[top10Words[i]]);
             }
-        }
-
-        static void StartQueueProcessing()
-        {
-            new Thread(() =>
-            {
-                Thread.CurrentThread.IsBackground = true;
-
-                while (true)
-                {
-                    Thread.Sleep(5000);
-                    if (words.TryDequeue(out var element))
-                        Console.WriteLine("======>  " + element + " прошел очередь");
-                }
-
-            }).Start();
+            Console.ReadKey();
         }
     }
 }
